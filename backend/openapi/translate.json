@@ -1,0 +1,83 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK translate",
+    "description": "Machine translation between languages via iFLYTEK.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/translate": {
+      "post": {
+        "operationId": "translate",
+        "summary": "Machine translation between languages via iFLYTEK.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Text to translate. Provide either text or file."
+                  },
+                  "file": {
+                    "type": "string",
+                    "description": "Path to a UTF-8 text file to translate instead of inline text."
+                  },
+                  "from_lang": {
+                    "type": "string",
+                    "description": "Source language code (e.g. cn, en). Default: cn.",
+                    "default": "cn"
+                  },
+                  "to_lang": {
+                    "type": "string",
+                    "description": "Target language code (e.g. en, cn, ja). Default: en.",
+                    "default": "en"
+                  },
+                  "raw": {
+                    "type": "boolean",
+                    "description": "Return the raw JSON API response.",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

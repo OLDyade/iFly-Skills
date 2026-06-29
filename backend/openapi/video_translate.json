@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK video_translate",
+    "description": "Translate the spoken content of a video (multi-action, async).",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/video_translate": {
+      "post": {
+        "operationId": "video_translate",
+        "summary": "Translate the spoken content of a video (multi-action, async).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "create_task",
+                      "get_task",
+                      "confirm_transcript"
+                    ],
+                    "description": "Workflow action to perform."
+                  },
+                  "file_url": {
+                    "type": "string",
+                    "description": "Video file OSS URL (required for create_task)."
+                  },
+                  "src_lang": {
+                    "type": "string",
+                    "description": "Source language. Default: en.",
+                    "default": "en"
+                  },
+                  "dest_lang": {
+                    "type": "string",
+                    "description": "Target language. Default: zh.",
+                    "default": "zh"
+                  },
+                  "task_id": {
+                    "type": "string",
+                    "description": "Task ID (required for get_task / confirm_transcript)."
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "action"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

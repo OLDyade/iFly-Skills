@@ -1,0 +1,82 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK voiceclone_synth",
+    "description": "Synthesize speech from a previously trained cloned voice resource.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/voiceclone_synth": {
+      "post": {
+        "operationId": "voiceclone_synth",
+        "summary": "Synthesize speech from a previously trained cloned voice resource.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Text to synthesize (or use file)."
+                  },
+                  "res_id": {
+                    "type": "string",
+                    "description": "Voice resource ID obtained from a completed training task."
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "mp3",
+                      "pcm",
+                      "speex",
+                      "opus"
+                    ],
+                    "description": "Audio format. Default: mp3.",
+                    "default": "mp3"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "res_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK pdf_ocr",
+    "description": "OCR a PDF document into Word, Markdown, or JSON (long-running, polls).",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/pdf_ocr": {
+      "post": {
+        "operationId": "pdf_ocr",
+        "summary": "OCR a PDF document into Word, Markdown, or JSON (long-running, polls).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pdf_path": {
+                    "type": "string",
+                    "description": "Path to the PDF file (or use pdf_url)."
+                  },
+                  "pdf_url": {
+                    "type": "string",
+                    "description": "Public URL of the PDF (alternative to uploading a file)."
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "word",
+                      "markdown",
+                      "json"
+                    ],
+                    "description": "Output format. Default: markdown.",
+                    "default": "markdown"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

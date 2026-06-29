@@ -1,0 +1,44 @@
+name: publish-n8n
+
+# Publishes the n8n community node package on a version tag.
+# Guarded on NPM_TOKEN so it no-ops until a maintainer configures the secret.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: n8n-nodes-iflytek
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build deps
+        run: |
+          pip install pyyaml
+          npm install --no-audit --no-fund
+
+      - name: Generate nodes + build
+        run: |
+          npm run generate
+          npm run build
+
+      - name: Publish to npm
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

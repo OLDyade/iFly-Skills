@@ -1,0 +1,15 @@
+# Backend service (Coze gateway + IM bots).
+fastapi>=0.110
+uvicorn[standard]>=0.27
+requests>=2.28
+
+# Skill runtime deps (imported by the skill scripts the backend executes).
+websocket-client>=1.5
+urllib3>=1.26
+
+# Shared registry/runner. Installed from the repo: pip install ./core
+# iflyskills-core
+
+# --- Optional, per IM platform ---
+# dingtalk-stream>=0.21   # bots.dingtalk (Stream mode)
+# pycryptodome>=3.19      # bots.wecom (message encryption)

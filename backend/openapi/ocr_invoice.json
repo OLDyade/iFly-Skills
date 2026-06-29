@@ -1,0 +1,72 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK ocr_invoice",
+    "description": "Extract structured fields from an invoice or receipt image.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/ocr_invoice": {
+      "post": {
+        "operationId": "ocr_invoice",
+        "summary": "Extract structured fields from an invoice or receipt image.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Path to the invoice/receipt image (png, jpg, bmp, gif, tif, pdf)."
+                  },
+                  "raw": {
+                    "type": "boolean",
+                    "description": "Return the raw API JSON response.",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

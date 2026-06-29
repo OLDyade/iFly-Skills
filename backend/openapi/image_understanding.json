@@ -1,0 +1,91 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK image_understanding",
+    "description": "Multimodal image understanding — describe or answer questions about an image.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/image_understanding": {
+      "post": {
+        "operationId": "image_understanding",
+        "summary": "Multimodal image understanding — describe or answer questions about an image.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "description": "Path to the image file (.jpg, .jpeg, .png)."
+                  },
+                  "question": {
+                    "type": "string",
+                    "description": "Question to ask about the image.",
+                    "default": "请详细描述这张图片的内容"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "enum": [
+                      "general",
+                      "imagev3"
+                    ],
+                    "description": "Model version. Default: imagev3.",
+                    "default": "imagev3"
+                  },
+                  "temperature": {
+                    "type": "number",
+                    "description": "Sampling temperature (0, 1]. Default: 0.5.",
+                    "default": 0.5
+                  },
+                  "max_tokens": {
+                    "type": "integer",
+                    "description": "Max response tokens (1-8192). Default: 2048.",
+                    "default": 2048
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "image"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

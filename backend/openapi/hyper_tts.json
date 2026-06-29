@@ -1,0 +1,107 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK hyper_tts",
+    "description": "Ultra-realistic text-to-speech synthesis with voice and prosody control.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/hyper_tts": {
+      "post": {
+        "operationId": "hyper_tts",
+        "summary": "Ultra-realistic text-to-speech synthesis with voice and prosody control.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "synthesize",
+                      "list_voices"
+                    ],
+                    "description": "synthesize audio, or list_voices to enumerate available voices.",
+                    "default": "synthesize"
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "Text to synthesize (required when action=synthesize)."
+                  },
+                  "vcn": {
+                    "type": "string",
+                    "description": "Voice (VCN) code. Default: x5_lingxiaotang_flow (聆小糖, female).",
+                    "default": "x5_lingxiaotang_flow"
+                  },
+                  "speed": {
+                    "type": "integer",
+                    "description": "Speed 0-100 (50 = normal).",
+                    "default": 50
+                  },
+                  "volume": {
+                    "type": "integer",
+                    "description": "Volume 0-100 (50 = normal).",
+                    "default": 50
+                  },
+                  "pitch": {
+                    "type": "integer",
+                    "description": "Pitch 0-100 (50 = normal).",
+                    "default": 50
+                  },
+                  "sample_rate": {
+                    "type": "integer",
+                    "enum": [
+                      8000,
+                      16000,
+                      24000
+                    ],
+                    "description": "Sample rate in Hz. Default: 24000.",
+                    "default": 24000
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "Optional role for supported voices: chat, narration, customer_service."
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

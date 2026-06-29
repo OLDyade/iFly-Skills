@@ -1,0 +1,5 @@
+# Third-party runtime dependencies imported by the skill scripts themselves.
+# Installed into the server image so run_skill can execute every skill.
+requests>=2.28
+websocket-client>=1.5
+urllib3>=1.26

@@ -1,0 +1,35 @@
+# Smithery deployment descriptor (https://smithery.ai/docs).
+# Stdio runtime: Smithery builds the Dockerfile, then launches the command
+# returned by commandFunction with the user's saved credentials in the env.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - iflytekAppId
+      - iflytekApiKey
+      - iflytekApiSecret
+    properties:
+      iflytekAppId:
+        type: string
+        title: iFLYTEK App ID
+        description: Application ID from the iFLYTEK open platform console.
+      iflytekApiKey:
+        type: string
+        title: iFLYTEK API Key
+      iflytekApiSecret:
+        type: string
+        title: iFLYTEK API Secret
+  commandFunction: |
+    (config) => ({
+      command: 'iflyskills-mcp',
+      args: [],
+      env: {
+        IFLYTEK_APP_ID: config.iflytekAppId,
+        IFLYTEK_API_KEY: config.iflytekApiKey,
+        IFLYTEK_API_SECRET: config.iflytekApiSecret
+      }
+    })
+build:
+  dockerfile: Dockerfile
+  dockerBuildPath: ..

@@ -1,0 +1,336 @@
+# Canonical skill manifest for iFly-Skills distribution channels.
+#
+# This file is the single source of truth consumed by every integration
+# (MCP server, Coze plugin, IM bots, n8n nodes). It is hand-authored from the
+# argparse definitions in each skill's scripts/ directory. The existing skill
+# scripts are NEVER modified — this manifest describes how to drive them.
+#
+# Per skill:
+#   id           directory name under the repo root
+#   tool_name    stable snake_case name exposed to agents/plugins
+#   summary      one-line description
+#   entry.script path to the python script, relative to the repo root
+#   entry.subcommand  optional leading positional token (argparse subparsers)
+#   cred_profile xfei | xfyun | ifly | composite | none  (see credentials.py)
+#   output       stdout_text | file | json | async_task
+#   advanced     true => richer/multi-step input; surfaced only where supported
+#   args[]       name, flag, type, required, default, enum, description, is_output_path
+#
+# arg.type:     string | integer | number | boolean | enum
+# arg.flag:     CLI flag (e.g. "--from"); omit for a positional argument
+# arg.is_output_path: marks the argument that receives the local output file path
+#                     (used by `output: file` skills so channels can capture the artifact)
+
+skills:
+  - id: iflytek-translate
+    tool_name: translate
+    summary: Machine translation between languages via iFLYTEK.
+    entry:
+      script: skills/iflytek-translate/scripts/translate.py
+    cred_profile: xfyun
+    output: stdout_text
+    args:
+      - name: text
+        type: string
+        required: false
+        description: Text to translate. Provide either text or file.
+      - name: file
+        flag: --file
+        type: string
+        required: false
+        description: Path to a UTF-8 text file to translate instead of inline text.
+      - name: from_lang
+        flag: --from
+        type: string
+        default: cn
+        description: "Source language code (e.g. cn, en). Default: cn."
+      - name: to_lang
+        flag: --to
+        type: string
+        default: en
+        description: "Target language code (e.g. en, cn, ja). Default: en."
+      - name: raw
+        flag: --raw
+        type: boolean
+        default: false
+        description: Return the raw JSON API response.
+
+  - id: iflytek-text-proofread
+    tool_name: proofread
+    summary: Chinese official-document proofreading and error correction.
+    entry:
+      script: skills/iflytek-text-proofread/scripts/text_proofread.py
+    cred_profile: ifly
+    output: stdout_text
+    args:
+      - name: text
+        type: string
+        required: false
+        description: Text to proofread. Provide either text or file.
+      - name: file
+        flag: --file
+        type: string
+        required: false
+        description: Path to a UTF-8 text file to proofread instead of inline text.
+      - name: raw
+        flag: --raw
+        type: boolean
+        default: false
+        description: Return the raw (decoded) JSON API response.
+
+  - id: iflytek-hyper-tts
+    tool_name: hyper_tts
+    summary: Ultra-realistic text-to-speech synthesis with voice and prosody control.
+    entry:
+      script: skills/iflytek-hyper-tts/scripts/xfei_hyper_tts.py
+    cred_profile: xfei
+    output: file
+    args:
+      - name: action
+        flag: --action
+        type: enum
+        enum: [synthesize, list_voices]
+        default: synthesize
+        description: "synthesize audio, or list_voices to enumerate available voices."
+      - name: text
+        flag: --text
+        type: string
+        required: false
+        description: Text to synthesize (required when action=synthesize).
+      - name: output
+        flag: --output
+        type: string
+        default: output.mp3
+        is_output_path: true
+        description: "Output audio file path. Default: output.mp3."
+      - name: vcn
+        flag: --vcn
+        type: string
+        default: x5_lingxiaotang_flow
+        description: "Voice (VCN) code. Default: x5_lingxiaotang_flow (聆小糖, female)."
+      - name: speed
+        flag: --speed
+        type: integer
+        default: 50
+        description: "Speed 0-100 (50 = normal)."
+      - name: volume
+        flag: --volume
+        type: integer
+        default: 50
+        description: "Volume 0-100 (50 = normal)."
+      - name: pitch
+        flag: --pitch
+        type: integer
+        default: 50
+        description: "Pitch 0-100 (50 = normal)."
+      - name: sample_rate
+        flag: --sample_rate
+        type: enum
+        enum: [8000, 16000, 24000]
+        default: 24000
+        description: "Sample rate in Hz. Default: 24000."
+      - name: role
+        flag: --role
+        type: string
+        required: false
+        description: "Optional role for supported voices: chat, narration, customer_service."
+
+  - id: iflytek-image-understanding
+    tool_name: image_understanding
+    summary: Multimodal image understanding — describe or answer questions about an image.
+    entry:
+      script: skills/iflytek-image-understanding/scripts/image_understanding.py
+    cred_profile: ifly
+    output: stdout_text
+    args:
+      - name: image
+        type: string
+        required: true
+        description: Path to the image file (.jpg, .jpeg, .png).
+      - name: question
+        flag: --question
+        type: string
+        default: 请详细描述这张图片的内容
+        description: Question to ask about the image.
+      - name: domain
+        flag: --domain
+        type: enum
+        enum: [general, imagev3]
+        default: imagev3
+        description: "Model version. Default: imagev3."
+      - name: temperature
+        flag: --temperature
+        type: number
+        default: 0.5
+        description: "Sampling temperature (0, 1]. Default: 0.5."
+      - name: max_tokens
+        flag: --max-tokens
+        type: integer
+        default: 2048
+        description: "Max response tokens (1-8192). Default: 2048."
+
+  - id: iflytek-ocr-invoice
+    tool_name: ocr_invoice
+    summary: Extract structured fields from an invoice or receipt image.
+    entry:
+      script: skills/iflytek-ocr-invoice/scripts/invoice.py
+    cred_profile: xfyun
+    output: json
+    args:
+      - name: image
+        type: string
+        required: true
+        description: Path to the invoice/receipt image (png, jpg, bmp, gif, tif, pdf).
+      - name: raw
+        flag: --raw
+        type: boolean
+        default: false
+        description: Return the raw API JSON response.
+
+  - id: iflytek-pdf-image-ocr
+    tool_name: image_ocr
+    summary: General OCR for a single image, returning text as JSON and/or Markdown.
+    entry:
+      script: skills/iflytek-pdf-image-ocr/scripts/image_ocr.py
+    cred_profile: ifly
+    output: stdout_text
+    args:
+      - name: image_path
+        type: string
+        required: true
+        description: Path to the image file.
+      - name: format
+        flag: --format
+        type: enum
+        enum: [json, markdown, "json,markdown"]
+        default: markdown
+        description: "Output format. Default: markdown."
+
+  - id: iflytek-pdf-image-ocr
+    tool_name: pdf_ocr
+    summary: OCR a PDF document into Word, Markdown, or JSON (long-running, polls).
+    entry:
+      script: skills/iflytek-pdf-image-ocr/scripts/pdf_ocr.py
+    cred_profile: ifly
+    output: async_task
+    args:
+      - name: pdf_path
+        type: string
+        required: false
+        description: Path to the PDF file (or use pdf_url).
+      - name: pdf_url
+        flag: --pdf-url
+        type: string
+        required: false
+        description: Public URL of the PDF (alternative to uploading a file).
+      - name: format
+        flag: --format
+        type: enum
+        enum: [word, markdown, json]
+        default: markdown
+        description: "Output format. Default: markdown."
+
+  - id: iflytek-speed-transcription
+    tool_name: transcribe
+    summary: High-speed audio-to-text transcription (long-running, polls).
+    entry:
+      script: skills/iflytek-speed-transcription/scripts/transcribe.py
+    cred_profile: xfei
+    output: async_task
+    args:
+      - name: file_path
+        type: string
+        required: true
+        description: Path to the audio file.
+      - name: language
+        flag: --language
+        type: string
+        default: zh_cn
+        description: "Language code. Default: zh_cn."
+      - name: accent
+        flag: --accent
+        type: string
+        default: mandarin
+        description: "Accent. Default: mandarin."
+      - name: speaker_num
+        flag: --speaker-num
+        type: integer
+        required: false
+        description: Number of speakers for diarization.
+      - name: output_format
+        flag: --output-format
+        type: enum
+        enum: [text, json]
+        default: text
+        description: "Output format. Default: text."
+
+  # --- advanced skills: included in the registry, surfaced only where the
+  #     channel can handle multi-step or URL/asset inputs ---
+
+  - id: iflytek-voiceclone-tts
+    tool_name: voiceclone_synth
+    summary: Synthesize speech from a previously trained cloned voice resource.
+    entry:
+      script: skills/iflytek-voiceclone-tts/scripts/voiceclone.py
+      subcommand: synth
+    cred_profile: ifly
+    output: file
+    advanced: true
+    args:
+      - name: text
+        type: string
+        required: false
+        description: Text to synthesize (or use file).
+      - name: res_id
+        flag: --res-id
+        type: string
+        required: true
+        description: Voice resource ID obtained from a completed training task.
+      - name: output
+        flag: --output
+        type: string
+        default: output.mp3
+        is_output_path: true
+        description: "Output audio file path. Default: output.mp3."
+      - name: format
+        flag: --format
+        type: enum
+        enum: [mp3, pcm, speex, opus]
+        default: mp3
+        description: "Audio format. Default: mp3."
+
+  - id: iflytek-video-translate
+    tool_name: video_translate
+    summary: Translate the spoken content of a video (multi-action, async).
+    entry:
+      script: skills/iflytek-video-translate/scripts/xfei_video_translate.py
+    cred_profile: xfyun
+    output: async_task
+    advanced: true
+    args:
+      - name: action
+        flag: --action
+        type: enum
+        enum: [create_task, get_task, confirm_transcript]
+        required: true
+        description: Workflow action to perform.
+      - name: file_url
+        flag: --file_url
+        type: string
+        required: false
+        description: Video file OSS URL (required for create_task).
+      - name: src_lang
+        flag: --src_lang
+        type: string
+        default: en
+        description: "Source language. Default: en."
+      - name: dest_lang
+        flag: --dest_lang
+        type: string
+        default: zh
+        description: "Target language. Default: zh."
+      - name: task_id
+        flag: --task_id
+        type: string
+        required: false
+        description: Task ID (required for get_task / confirm_transcript).

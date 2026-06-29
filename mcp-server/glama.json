@@ -1,0 +1,16 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "iflyskills",
+  "description": "iFLYTEK skills (TTS, OCR, translation, speech transcription, multimodal understanding) as MCP tools.",
+  "license": "Apache-2.0",
+  "maintainers": ["iflytek"],
+  "tags": ["tts", "ocr", "translation", "speech-to-text", "multimodal", "iflytek"],
+  "transport": "stdio",
+  "config": {
+    "env": {
+      "IFLYTEK_APP_ID": { "required": true, "description": "iFLYTEK app id" },
+      "IFLYTEK_API_KEY": { "required": true, "description": "iFLYTEK api key" },
+      "IFLYTEK_API_SECRET": { "required": true, "description": "iFLYTEK api secret" }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+name: publish-mcp
+
+# Publishes the MCP server on a version tag. Each step is guarded on the
+# presence of its secret, so the workflow no-ops cleanly until a maintainer
+# configures credentials.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate manifest against skill argparse
+        run: |
+          pip install ./core
+          pip install -r mcp-server/requirements-skills.txt
+          python -m iflyskills_core.introspect
+
+      - name: Build Docker image
+        run: |
+          docker build -f mcp-server/Dockerfile \
+            -t ghcr.io/${{ github.repository_owner }}/iflyskills-mcp:${{ github.ref_name }} .
+
+      - name: Push to GHCR
+        if: ${{ secrets.GHCR_TOKEN != '' }}
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository_owner }}/iflyskills-mcp:${{ github.ref_name }}
+
+      - name: Publish to Smithery
+        if: ${{ secrets.SMITHERY_TOKEN != '' }}
+        run: |
+          npx -y @smithery/cli@latest deploy \
+            --config mcp-server/smithery.yaml \
+            --token "${{ secrets.SMITHERY_TOKEN }}"
+
+      - name: Notify Glama
+        if: ${{ secrets.GLAMA_TOKEN != '' }}
+        run: |
+          curl -fsS -X POST https://glama.ai/api/mcp/v1/servers/refresh \
+            -H "Authorization: Bearer ${{ secrets.GLAMA_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"repository\": \"${{ github.repository }}\"}"

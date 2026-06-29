@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "iFLYTEK transcribe",
+    "description": "High-speed audio-to-text transcription (long-running, polls).",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://example.com"
+    }
+  ],
+  "paths": {
+    "/skills/transcribe": {
+      "post": {
+        "operationId": "transcribe",
+        "summary": "High-speed audio-to-text transcription (long-running, polls).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file_path": {
+                    "type": "string",
+                    "description": "Path to the audio file."
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Language code. Default: zh_cn.",
+                    "default": "zh_cn"
+                  },
+                  "accent": {
+                    "type": "string",
+                    "description": "Accent. Default: mandarin.",
+                    "default": "mandarin"
+                  },
+                  "speaker_num": {
+                    "type": "integer",
+                    "description": "Number of speakers for diarization."
+                  },
+                  "output_format": {
+                    "type": "string",
+                    "enum": [
+                      "text",
+                      "json"
+                    ],
+                    "description": "Output format. Default: text.",
+                    "default": "text"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "file_path"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Skill result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "output": {
+                      "type": "string"
+                    },
+                    "artifact_url": {
+                      "type": "string"
+                    },
+                    "task_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
